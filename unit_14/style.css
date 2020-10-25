@@ -1,0 +1,68 @@
+
+
+html, body {
+    font-family: serif;
+}
+body {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    overflow: auto;
+}
+
+.main {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.one-day-meteo-block {
+    display: block;
+    position: relative;
+    width: 300px;
+    left: 40%;
+}
+.city-name {
+    text-align: center;
+    padding: 10px;
+}
+.city-name h3{
+    text-shadow: gray 2px 2px 1px;
+}
+
+.temp_block {
+    width: 100%;
+    text-align: center;
+    font-size: 60px;
+}
+
+.img_block img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-block {
+    position: relative;
+    left: 40%;
+    width: 300px;
+}
+
+.five-days-meteo-block {
+    position: relative;
+    left:35px;
+    display: none;
+}
+
+.links-group {
+    position: relative;
+    left: 40%;
+    width: 300px;
+    margin-bottom:5px;
+}
+
+.ulGroup {
+    display: inline-block;
+    flex-direction: row;
+    text-align: center;
+    margin: 5px;
+}
