@@ -5,44 +5,34 @@ const geoLocationRequest = () => {
             return response.json();
         })
         .then(data => {
-            let place = {
-                city: data.city,
-                countryCode: data.country
-            }
-            weatherRequest(place);
+            let city = data.city
+            weatherRequest('weather',city);
+            weatherRequest('forecast', city);
         })
     }
 // запрос погоды
-const weatherRequest = (place,days) => {
+const weatherRequest = (type,city) => {
     let api_key = '9dbb22786edf5ee63f9373807567d257';
-    fetch(`http://api.openweathermap.org/data/2.5/weather?q=${place.city},${place.countryCode}&appid=${api_key}`)
-       .then(resp => { return resp.json() })
-          .then(data => {
-              if(data.cod !== '404') {
-                  document.querySelector('.one-day-meteo-block').innerHTML = null;
-                  document.querySelector('#search-input').value = '';
-                  oneDayMeteoBlock(data);
-              }
-              else {
-                  document.querySelector('#search-input').value = '';
-                  warningBlock(data.message);
-              }
-          })
-    fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${place.city}&appid=${api_key}`)
+    fetch(`http://api.openweathermap.org/data/2.5/${type}?q=${city}&appid=${api_key}`)
         .then(resp => { return resp.json() })
         .then(data => {
-            let sortedArray = {};
-            let arr = [];
-            let n = +`${data.list[0].dt_txt[8]}${data.list[0].dt_txt[9]}`;
-            for(let i = 0; i < data.list.length; i++) {
-                if (n !== +`${data.list[i].dt_txt[8]}${data.list[i].dt_txt[9]}`) {
-                    n++
-                    arr = [];
-                }
-                if (n === +`${data.list[i].dt_txt[8]}${data.list[i].dt_txt[9]}`) arr.push(data.list[i]);
-                sortedArray[n] = arr;
+            if(data.cod !== '404' && type === 'weather') {
+                document.querySelector('.one-day-meteo-block').innerHTML = null;
+                document.querySelector('#search-input').value = '';
+                oneDayMeteoBlock(data);
             }
-            if(data.cod !== '404') {
+            else if(data.cod !== '404' && type === 'forecast') {
+                let sortedArray = {};
+                let arr = [];
+                let n = +`${data.list[0].dt_txt[8]}${data.list[0].dt_txt[9]}`;
+                for(let i = 0; i < data.list.length; i++) {
+                    if (n !== +`${data.list[i].dt_txt[8]}${data.list[i].dt_txt[9]}`) {
+                        n++
+                        arr = [];
+                    }
+                    if (n === +`${data.list[i].dt_txt[8]}${data.list[i].dt_txt[9]}`) arr.push(data.list[i]);
+                    sortedArray[n] = arr;
+                }
                 document.querySelector('.five-days-meteo-block').innerHTML = null;
                 document.querySelector('#search-input').value = '';
                 fiveDaysMeteoBlock(sortedArray, data.city.name, data.city.country);
@@ -51,8 +41,7 @@ const weatherRequest = (place,days) => {
                 document.querySelector('#search-input').value = '';
                 warningBlock(data.message);
             }
-    })
-}
+})}
 //блок с погодой на 1 день
 const oneDayMeteoBlock = (data) => {
 //Блок с названием города
@@ -108,13 +97,11 @@ const warningBlock = (str) => {
 
 //блок поиска
 document.querySelector('#search-city').onclick = () => {
-    place =  {
-        city: document.querySelector('#search-input').value,
-        countryCode: ''
-    };
+    let city = document.querySelector('#search-input').value
     // Проверка на ввод текста
-    if(place.city !== '') {
-        weatherRequest(place);
+    if(city !== '') {
+        weatherRequest('weather', city);
+        weatherRequest('forecast', city);
     } else {
         warningBlock("Entered isn't correct");
     }
