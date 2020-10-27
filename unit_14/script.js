@@ -1,3 +1,9 @@
+// глобальная переменная с текущим названием города
+const isCurrentCity = (city) => {
+   window.currentCity = city;
+}
+
+
 // определяем геолокацию
 const geoLocationRequest = () => {
     fetch('http://ip-api.com/json/?fields=61439')
@@ -7,9 +13,12 @@ const geoLocationRequest = () => {
         .then(data => {
             let city = data.city
             weatherRequest('weather',city);
-            weatherRequest('forecast', city);
         })
     }
+
+// запрос при открытии страницы
+geoLocationRequest();
+
 // запрос погоды
 const weatherRequest = (type,city) => {
     let api_key = '9dbb22786edf5ee63f9373807567d257';
@@ -17,23 +26,27 @@ const weatherRequest = (type,city) => {
         .then(resp => { return resp.json() })
         .then(data => {
             if(data.cod !== '404' && type === 'weather') {
-                document.querySelector('.one-day-meteo-block').innerHTML = null;
+                isCurrentCity(city);
+                document.querySelector('.meteo-block').innerHTML = null;
                 document.querySelector('#search-input').value = '';
                 oneDayMeteoBlock(data);
             }
             else if(data.cod !== '404' && type === 'forecast') {
-                let sortedArray = {};
+                isCurrentCity(city);
+                let sortedArray = [];
                 let arr = [];
                 let n = +`${data.list[0].dt_txt[8]}${data.list[0].dt_txt[9]}`;
                 for(let i = 0; i < data.list.length; i++) {
                     if (n !== +`${data.list[i].dt_txt[8]}${data.list[i].dt_txt[9]}`) {
-                        n++
+                        n = +`${data.list[i].dt_txt[8]}${data.list[i].dt_txt[9]}`;
+                        sortedArray.push(arr);
+                        console.log(arr)
                         arr = [];
                     }
                     if (n === +`${data.list[i].dt_txt[8]}${data.list[i].dt_txt[9]}`) arr.push(data.list[i]);
-                    sortedArray[n] = arr;
                 }
-                document.querySelector('.five-days-meteo-block').innerHTML = null;
+                sortedArray.push(arr);
+                document.querySelector('.meteo-block').innerHTML = null;
                 document.querySelector('#search-input').value = '';
                 fiveDaysMeteoBlock(sortedArray, data.city.name, data.city.country);
             }
@@ -45,6 +58,9 @@ const weatherRequest = (type,city) => {
 //блок с погодой на 1 день
 const oneDayMeteoBlock = (data) => {
 //Блок с названием города
+    const oneDayMeteoBlock = document.createElement('div');
+    oneDayMeteoBlock.classList.add('one-day-meteo-block');
+    document.querySelector('.meteo-block').append(oneDayMeteoBlock);
     const cityNameDiv = document.createElement('div');
     cityNameDiv.classList.add('city-name');
     cityNameDiv.innerHTML =`<h1>${data.name}, ${data.sys.country}</h1>`
@@ -66,7 +82,7 @@ const fiveDaysMeteoBlock = (sortedArray,city,region) => {
     const fiveDaysDivBlock = document.createElement('div');
     let out = '';
     for(let key in sortedArray) {
-        let date = `${key}.${sortedArray[key][0].dt_txt[5]}${sortedArray[key][0].dt_txt[6]}`;
+        let date = `${sortedArray[key][0].dt_txt[8]}${sortedArray[key][0].dt_txt[9]}.${sortedArray[key][0].dt_txt[5]}${sortedArray[key][0].dt_txt[6]}`;
         out += `<div class="ulGroup"><ul class="list-group" >
                     <li class="list-group-item list-group-item-warning">
                         ${city},${region} Date: ${date}
@@ -81,7 +97,7 @@ const fiveDaysMeteoBlock = (sortedArray,city,region) => {
     }
     fiveDaysDivBlock.classList.add('five-days-div-block');
     fiveDaysDivBlock.innerHTML = out;
-    document.querySelector('.five-days-meteo-block').append(fiveDaysDivBlock);
+    document.querySelector('.meteo-block').append(fiveDaysDivBlock);
 }
 
 
@@ -97,27 +113,30 @@ const warningBlock = (str) => {
 
 //блок поиска
 document.querySelector('#search-city').onclick = () => {
-    let city = document.querySelector('#search-input').value
+    let city = document.querySelector('#search-input');
+    let choiceCurrentDays = city.getAttribute("data-current-days");
     // Проверка на ввод текста
-    if(city !== '') {
-        weatherRequest('weather', city);
-        weatherRequest('forecast', city);
-    } else {
+    if(city.value !== '' && choiceCurrentDays === '1') {
+        weatherRequest('weather', city.value);
+    }
+    else if(city.value !== '' && choiceCurrentDays === '5') {
+        weatherRequest('forecast', city.value);
+    }
+    else {
         warningBlock("Entered isn't correct");
     }
 }
+
 //событие кнопок
 document.querySelector('.one-day').onclick = () => {
-    document.querySelector('.five-days-meteo-block').style.display = 'none';
     document.querySelector('.five-days').classList.remove('active');
-    document.querySelector('.one-day-meteo-block').style.display = 'block';
     document.querySelector('.one-day').classList.add('active');
+    document.querySelector('#search-input').setAttribute('data-current-days', '1');
+    weatherRequest('weather', currentCity);
 }
 document.querySelector('.five-days').onclick = () => {
-    document.querySelector('.one-day-meteo-block').style.display = 'none';
     document.querySelector('.one-day').classList.remove('active');
-    document.querySelector('.five-days-meteo-block').style.display = 'block';
     document.querySelector('.five-days').classList.add('active');
+    document.querySelector('#search-input').setAttribute('data-current-days', '5');
+    weatherRequest('forecast', currentCity);
 }
-// запрос при открытии страницы
-geoLocationRequest();

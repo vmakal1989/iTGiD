@@ -13,8 +13,7 @@
 
 <body>
     <div class="main">
-        <div class="one-day-meteo-block"></div>
-        <div class="five-days-meteo-block"></div>
+        <div class="meteo-block"></div>
         <div class="links-group">
             <ul class="nav nav-pills nav-fill">
                 <li class="nav-item">
@@ -28,7 +27,8 @@
         <div class="search-block">
             <div class="error-block"></div>
             <div class="input-group mb-3">
-                <input id="search-input" type="text" class="form-control" placeholder="Enter city" aria-label="Enter city" aria-describedby="button-addon2">
+                <input id="search-input" type="text" class="form-control"  data-current-days="1"
+                       placeholder="Enter city" aria-label="Enter city" aria-describedby="button-addon2">
                 <div class="input-group-append">
                     <button id="search-city" class="btn btn-success" type="button"  >Send</button>
                 </div>

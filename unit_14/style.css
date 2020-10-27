@@ -16,7 +16,6 @@ body {
     height: 100%;
 }
 .one-day-meteo-block {
-    display: block;
     position: relative;
     width: 300px;
     left: 40%;
@@ -49,8 +48,7 @@ body {
 
 .five-days-meteo-block {
     position: relative;
-    left:35px;
-    display: none;
+    left:50px;
 }
 
 .links-group {
