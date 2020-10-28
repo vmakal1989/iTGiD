@@ -40,7 +40,6 @@ const weatherRequest = (type,city) => {
                     if (n !== +`${data.list[i].dt_txt[8]}${data.list[i].dt_txt[9]}`) {
                         n = +`${data.list[i].dt_txt[8]}${data.list[i].dt_txt[9]}`;
                         sortedArray.push(arr);
-                        console.log(arr)
                         arr = [];
                     }
                     if (n === +`${data.list[i].dt_txt[8]}${data.list[i].dt_txt[9]}`) arr.push(data.list[i]);
